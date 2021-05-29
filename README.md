@@ -1,6 +1,6 @@
 # ケンオール JavaScript SDKデモ
 
-## 実効方法
+## 実行方法
 
 ```
 $ REACT_APP_KENALL_API_KEY=[APIキー] npm run start

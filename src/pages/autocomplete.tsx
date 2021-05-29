@@ -30,7 +30,9 @@ const SENTINEL: Address = {
   corporation: null,
 };
 
-const api = new KENALL(process.env.REACT_APP_KENALL_API_KEY as string, {apibase: 'https://api-beta.kenall.jp/v1', timeout: 10000})
+const apiBaseUrl = process.env.REACT_APP_KENALL_API_BASE_URL || 'https://api-beta.kenall.jp/v1';
+
+const api = new KENALL(process.env.REACT_APP_KENALL_API_KEY as string, {apibase: apiBaseUrl, timeout: 10000})
 
 type AddressSearcher = (options: AddressSearcherOptions) => Promise<Candidates>;
 
@@ -167,7 +169,7 @@ const Autocomplete: React.FunctionComponent = () => {
               例: <span className="bg-gray-200 p-1 mr-1">愛知県</span> <span className="bg-gray-200 p-1 mr-1">横浜市 港北区</span>
             </p>
           </div>
-          <div className="text-lg w-9/12">
+          <div className="text-lg w-full md:w-9/12">
             <Autosuggest
               suggestions={candidates !== undefined && !(candidates instanceof Error) ? candidates.data : [SENTINEL]}
               onSuggestionsFetchRequested={onCandidatesRequested}
