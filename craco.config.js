@@ -2,17 +2,17 @@ const webpack = require('webpack');
 
 module.exports = {
   style: {
-	postcss: {
-	  plugins: [
-		require('tailwindcss'),
-		require('autoprefixer'),
-	  ]
-	},	
+    postcss: {
+      plugins: [
+        require('tailwindcss'),
+        require('autoprefixer'),
+      ]
+    },    
   },
   babel: {
-	plugins: [
+    plugins: [
       ['styled-jsx/babel', { plugins: ['styled-jsx-plugin-postcss'] }],
-	],
+    ],
   },
   webpack: {
     plugins: {
