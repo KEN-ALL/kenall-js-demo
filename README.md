@@ -1,4 +1,4 @@
-# ケンオール JavaScript SDKデモ
+# ケンオール JavaScript SDK デモ
 
 ## 実行方法
 

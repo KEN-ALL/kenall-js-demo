@@ -5,20 +5,28 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@ken-all/kenall": "^1.4.0",
+    "@emotion/react": "^11.7.1",
+    "@emotion/styled": "^11.6.0",
+    "@ken-all/kenall": "^1.4.4",
+    "@mui/icons-material": "^5.3.0",
+    "@mui/material": "^5.3.0",
     "@tailwindcss/forms": "^0.4.0",
     "@types/node": "^17.0.10",
     "@types/react": "^17.0.38",
     "@types/react-autosuggest": "^10.1.5",
     "@types/react-dom": "^17.0.11",
+    "@xobotyi/scrollbar-width": "^1.9.5",
     "autoprefixer": "^9.8.6",
     "postcss": "^8.2.10",
+    "prettier": "^2.5.1",
     "react": "^17.0.2",
     "react-autosuggest": "^10.1.0",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.25.0",
     "react-router-dom": "^6.2.1",
     "react-scripts": "^4.0.0",
+    "react-table": "^7.7.0",
+    "react-window": "^1.8.6",
     "styled-jsx": "^5.0.0",
     "styled-jsx-plugin-postcss": "^4.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.2",
@@ -28,7 +36,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "format": "prettier -w ."
   },
   "eslintConfig": {
     "extends": [
@@ -46,5 +55,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/react-table": "^7.7.9",
+    "@types/react-window": "^1.8.5"
   }
 }
