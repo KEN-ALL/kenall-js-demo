@@ -6,6 +6,7 @@
   "dependencies": {
     "@craco/craco": "^6.1.2",
     "@ken-all/kenall": "^1.2.0",
+    "@tailwindcss/forms": "^0.4.0",
     "@types/node": "^12.20.13",
     "@types/react": "^17.0.5",
     "@types/react-autosuggest": "^10.1.4",
@@ -17,6 +18,7 @@
     "react": "^17.0.2",
     "react-autosuggest": "^10.1.0",
     "react-dom": "^17.0.2",
+    "react-hook-form": "^7.23.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.3",
     "styled-jsx": "^3.4.4",

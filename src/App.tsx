@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link, Switch, Route } from 'react-router-dom';
 import Index from './pages/index';
-import Autocomplete from './pages/autocomplete';
+import Lookup from './pages/lookup';
+import ReverseLookup from './pages/reverse-lookup';
 
 function App() {
   const [menuShown, setMenuShown] = React.useState<boolean>(false);
@@ -16,13 +17,17 @@ function App() {
           </button>
         </header>
         <ul className={'duration-500 transion-right md:transition-none bg-white md:bg-transparent md:block p-5 md:p-0 md:mx-5 md:my-0 absolute top-10 bottom-0 w-1/2 md:w-auto md:static md:right-auto ' + (menuShown ? 'right-0' : '-right-full')}>
-          <li><Link to="/autocomplete" className="text-gray-500 block">Autocomplete</Link></li>
+          <li><Link to="/lookup" className="text-gray-500 block">郵便番号正引き検索</Link></li>
+          <li><Link to="/reverse-lookup" className="text-gray-500 block">郵便番号逆引き検索</Link></li>
         </ul>
       </aside>
       <main className="md:flex-1 px-5 md:py-5 mt-16 md:m-0">
         <Switch>
-          <Route path="/autocomplete">
-            <Autocomplete />
+          <Route path="/lookup">
+            <Lookup />
+          </Route>
+          <Route path="/reverse-lookup">
+            <ReverseLookup />
           </Route>
           <Route path="/">
             <Index />
