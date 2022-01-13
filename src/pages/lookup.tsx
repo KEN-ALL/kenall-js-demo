@@ -390,7 +390,6 @@ const Form: React.FunctionComponent<{
   </>;
 };
 
-
 const Lookup: React.FunctionComponent = () => {
   const [timerId, setTimerId] = React.useState<number | undefined>();
 
