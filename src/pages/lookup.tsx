@@ -132,8 +132,12 @@ const Form: React.FunctionComponent<{
   timerId: number | undefined;
   setTimerId: (id: number | undefined) => void;
 }> = ({timerId, setTimerId}) => {
-  const { getValues, setValue, register, watch, reset } = useForm<AddressForm>();
+  const { getValues, setValue, register, watch, reset, handleSubmit } = useForm<AddressForm>();
   const [timerRunning, setTimerRunning] = React.useState<boolean>(false);
+
+  const onSubmit = (data: AddressForm) => {
+    console.log(data);
+  };
 
   const watchFields = watch(['postal', 'prefecture', 'city', 'address1', 'address2']);
 
@@ -233,7 +237,7 @@ const Form: React.FunctionComponent<{
   }
 }
     `}</style>
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid gap-2 md-form-field-horiz grid-cols-1">
         <label htmlFor="form-postal" className="form-label">
           <span className="form-label-main required">郵便番号</span>
@@ -371,7 +375,7 @@ const Form: React.FunctionComponent<{
         </div>
       </div>
 
-      <div className="mt-6 flex flex-row gap-1">
+      <div className="mt-6 flex md:flex-row md:max-w-xl flex-col space-y-2 md:space-y-0 md:space-x-2">
         <button
           type="reset"
           className="rounded-md bg-gray-300 p-2 flex flex-1 justify-center item-center"
