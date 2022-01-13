@@ -346,7 +346,7 @@ const Lookup: React.FunctionComponent = () => {
             </div>
 
             <label htmlFor="form-address2" className="form-label nogap">
-              <span className="form-label-main required">建物名など</span>
+              <span className="form-label-main">建物名など</span>
               <span className="form-label-aux">(例: ○○マンション101号)</span>
             </label>
             <div className="form-field-main">
