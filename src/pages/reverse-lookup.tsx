@@ -52,7 +52,7 @@ const searchAddresses: AddressSearcher = (() => {
   };
 })();
 
-const Autocomplete: React.FunctionComponent = () => {
+const ReverseLookup: React.FunctionComponent = () => {
   const [address, setAddress] = React.useState<string>('');
   const [candidates, setCandidates] = React.useState<Candidates | Error | undefined>(undefined);
 
@@ -159,7 +159,7 @@ const Autocomplete: React.FunctionComponent = () => {
       
       `}</style>
       <header className="flex-1 align-center">
-        <h1 className="mb-5 text-3xl font-bold text-gray-500">Autocomplete</h1>
+        <h1 className="mb-5 text-3xl font-bold text-gray-500">郵便番号逆引き検索</h1>
       </header>
       <main className="flex-1">
         <div>
@@ -196,4 +196,4 @@ const Autocomplete: React.FunctionComponent = () => {
   );
 };
 
-export default Autocomplete;
+export default ReverseLookup;
