@@ -16,7 +16,7 @@ function App() {
             <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"></path></svg>
           </button>
         </header>
-        <ul className={'duration-500 transion-right md:transition-none bg-white md:bg-transparent md:block p-5 md:p-0 md:mx-5 md:my-0 absolute top-10 bottom-0 w-1/2 md:w-auto md:static md:right-auto ' + (menuShown ? 'right-0' : '-right-full')}>
+        <ul className={'z-20 duration-500 transion-right md:transition-none bg-white md:bg-transparent md:block p-5 md:p-0 md:mx-5 md:my-0 absolute top-10 bottom-0 w-1/2 md:w-auto md:static md:right-auto ' + (menuShown ? 'right-0' : '-right-full')}>
           <li><Link to="/lookup" className="text-gray-500 block">郵便番号正引き検索</Link></li>
           <li><Link to="/reverse-lookup" className="text-gray-500 block">郵便番号逆引き検索</Link></li>
         </ul>
