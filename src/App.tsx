@@ -9,7 +9,7 @@ function App() {
 
   return (
     <div className="flex flex-col md:flex-row overflow-hidden min-h-screen relative" onClick={(e) => {e.stopPropagation(); setMenuShown(false);}}>
-      <aside className="z-10 md:h-none h-screen md:static absolute inset-0">
+      <aside className="md:h-none h-screen md:static absolute inset-0">
         <header className="bg-gray-200 md:bg-transparent h-15 md:h-none flex items-center">
           <h1 className="py-3 px-5 md:pt-5 text-lg flex-grow"><Link to="/">ケンオール</Link></h1>
           <button className="block md:hidden px-2 py-1 m-2" onClick={(e) => { e.stopPropagation(); setMenuShown(!menuShown) }}>
@@ -21,7 +21,7 @@ function App() {
           <li><Link to="/reverse-lookup" className="text-gray-500 block">郵便番号逆引き検索</Link></li>
         </ul>
       </aside>
-      <main className="md:flex-1 px-5 md:py-5 mt-16 md:m-0">
+      <main className="z-10 md:flex-1 px-5 md:py-5 mt-16 md:m-0">
         <Switch>
           <Route path="/lookup">
             <Lookup />
