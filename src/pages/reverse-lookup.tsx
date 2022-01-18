@@ -69,7 +69,7 @@ const ReverseLookup: React.FunctionComponent = () => {
       });
       setCandidates(result);
     } catch (e) {
-      setCandidates(e);
+      setCandidates(e as Error);
     }
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, Switch, Route } from 'react-router-dom';
+import { Link, Routes, Route } from 'react-router-dom';
 import Index from './pages/index';
 import Lookup from './pages/lookup';
 import ReverseLookup from './pages/reverse-lookup';
@@ -22,17 +22,11 @@ function App() {
         </ul>
       </aside>
       <main className="z-10 md:flex-1 px-5 md:py-5 mt-16 md:m-0">
-        <Switch>
-          <Route path="/lookup">
-            <Lookup />
-          </Route>
-          <Route path="/reverse-lookup">
-            <ReverseLookup />
-          </Route>
-          <Route path="/">
-            <Index />
-          </Route>
-        </Switch> 
+        <Routes>
+          <Route path="/lookup" element={<Lookup />} />
+          <Route path="/reverse-lookup" element={<ReverseLookup />} />
+          <Route path="/" element={<Index />} />
+        </Routes>
       </main>
     </div>
   );
