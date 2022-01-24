@@ -417,7 +417,7 @@ const SearchResultTable: React.FunctionComponent<{
         window.clearInterval(c);
       }
       if (queue.current !== undefined && queue.current.t) {
-        window.clearTimeout(queue.current.t);
+        window.clearTimeout(queue.current.t);  /* eslint "react-hooks/exhaustive-deps": "off" */
       }
     };
   }, [options]);
@@ -461,7 +461,7 @@ const SearchResultTable: React.FunctionComponent<{
         </div>
       );
     },
-    [prepareRow, rows, height]
+    [prepareRow, rows, height, onSelect, totalColumnsWidth]
   );
 
   const rowContainerRef = React.useRef<HTMLDivElement>(null);
@@ -548,9 +548,6 @@ const Modal: React.FunctionComponent<{
   };
 
   const { register, handleSubmit, reset } = useForm<SearchParams>();
-  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
-    undefined
-  );
 
   const Select: React.FunctionComponent<{
     name: string;
@@ -621,7 +618,6 @@ const Modal: React.FunctionComponent<{
                   placeholder="法人名で検索(例: オープンコレクター)"
                   {...register('corporateName')}
                 ></input>
-                <span>{errorMessage && errorMessage}</span>
               </div>
               <div className="flex flex-row flex-wrap -mr-1">
                 <div className="mt-1 mr-1">

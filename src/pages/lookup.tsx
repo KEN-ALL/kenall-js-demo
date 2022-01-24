@@ -220,7 +220,7 @@ const Form: React.FunctionComponent<{
       setTimerId(timerId);
       setTimerRunning(true);
     });
-  }, watchFields);
+  }, watchFields); /* eslint "react-hooks/exhaustive-deps": "off" */
 
   return (
     <>
@@ -445,7 +445,7 @@ const Lookup: React.FunctionComponent = () => {
         window.clearTimeout(timerId);
       }
     },
-    []
+    [timerId]
   );
 
   return (
