@@ -143,10 +143,8 @@ const Indicator: React.FunctionComponent<{
   );
 };
 
-const Form: React.FunctionComponent<{
-  timerId: number | undefined;
-  setTimerId: (id: number | undefined) => void;
-}> = ({ timerId, setTimerId }) => {
+const Form: React.FunctionComponent = () => {
+  const timerRef = React.useRef<number | undefined>(undefined);
   const { getValues, setValue, register, watch, reset, handleSubmit } =
     useForm<AddressForm>();
   const [timerRunning, setTimerRunning] = React.useState<boolean>(false);
@@ -165,9 +163,9 @@ const Form: React.FunctionComponent<{
 
   React.useEffect(() => {
     // タイマーがすでに動いていればキャンセルする
-    if (timerId !== undefined) {
-      clearTimeout(timerId);
-      setTimerId(undefined);
+    if (timerRef.current !== undefined) {
+      window.clearTimeout(timerRef.current);
+      timerRef.current = undefined;
       setTimerRunning(false);
     }
     // すでに入力済みであれば何もしない
@@ -196,7 +194,7 @@ const Form: React.FunctionComponent<{
         return;
       }
       // ブラウザのautocompleteを邪魔しないように2秒後に補完を発動する
-      const timerId = window.setTimeout(() => {
+      timerRef.current = window.setTimeout(() => {
         setTimerRunning(false);
         // 再度バリデーション
         {
@@ -217,9 +215,13 @@ const Form: React.FunctionComponent<{
         setValue('address1', address1);
         setValue('address2', address2);
       }, 2000);
-      setTimerId(timerId);
       setTimerRunning(true);
     });
+    return () => {
+      if (timerRef.current !== undefined) {
+        window.clearTimeout(timerRef.current);
+      }
+    };
   }, watchFields); /* eslint "react-hooks/exhaustive-deps": "off" */
 
   return (
@@ -437,17 +439,6 @@ const Form: React.FunctionComponent<{
 };
 
 const Lookup: React.FunctionComponent = () => {
-  const [timerId, setTimerId] = React.useState<number | undefined>();
-
-  React.useEffect(
-    () => () => {
-      if (timerId !== undefined) {
-        window.clearTimeout(timerId);
-      }
-    },
-    [timerId]
-  );
-
   return (
     <section className="flex flex-col">
       <header className="flex-1 align-center">
@@ -456,7 +447,7 @@ const Lookup: React.FunctionComponent = () => {
         </h1>
       </header>
       <main className="flex-1">
-        <Form timerId={timerId} setTimerId={setTimerId} />
+        <Form />
       </main>
     </section>
   );

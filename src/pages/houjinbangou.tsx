@@ -346,7 +346,7 @@ const SearchResultTable: React.FunctionComponent<{
       bag.push(f);
     }
     if (queue.current.t !== undefined) {
-      clearTimeout(queue.current.t);
+      window.clearTimeout(queue.current.t);
     }
     queue.current.t = window.setTimeout(() => {
       const fs = queue.current.fs;
