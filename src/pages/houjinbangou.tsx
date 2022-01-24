@@ -856,7 +856,7 @@ const Houjinbangou = () => {
           @apply bg-gray-100;
         }
       `}</style>
-      <div className="min-h-screen flex flex-col">
+      <div className="flex flex-col">
         <h1 className="mb-5 text-3xl font-bold text-gray-500">
           法人番号API デモ: 法人住所入力フォーム
         </h1>
