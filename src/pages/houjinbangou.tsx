@@ -109,8 +109,13 @@ class NTACorporateInfoChunk {
 class VirtualizedSearchResult {
   lru: number[] = [];
   sorted: NTACorporateInfoChunk[] = [];
-  _count: Promise<number> | undefined = undefined;
   options: NTACorporateInfoSearcherOptions;
+  private _count: Promise<number> | undefined = undefined;
+  private cancelables = new WeakMap<
+    Promise<NTACorporateInfo | undefined>,
+    Promise<NTACorporateInfo | undefined>
+  >();
+  private canceled: boolean = false;
 
   constructor(
     private api: KENALL,
@@ -140,6 +145,25 @@ class VirtualizedSearchResult {
     }
     this.sorted.splice(ci, 1);
     return true;
+  }
+
+  cancelAll() {}
+
+  private makeCancelable(
+    p: Promise<NTACorporateInfo | undefined>
+  ): Promise<NTACorporateInfo | undefined> {
+    let cancelable = this.cancelables.get(p);
+    if (cancelable === undefined) {
+      cancelable = new Promise((resolve, reject) => {
+        this.cancelables.delete(p);
+        if (this.canceled) {
+          return undefined;
+        }
+        p.then(resolve, reject);
+      });
+      this.cancelables.set(p, cancelable);
+    }
+    return cancelable;
   }
 
   async count(): Promise<number> {
@@ -173,7 +197,7 @@ class VirtualizedSearchResult {
     if (this.lru.length > 0) {
       const itemP = this.sorted[this.lru[0]].pointedBy(i)[1];
       if (itemP !== undefined) {
-        return itemP;
+        return this.makeCancelable(itemP);
       }
     }
     {
@@ -231,7 +255,7 @@ class VirtualizedSearchResult {
       }
       {
         const itemP = chunk.pointedBy(i)[1];
-        return itemP;
+        return itemP && this.makeCancelable(itemP);
       }
     }
   }
@@ -413,11 +437,14 @@ const SearchResultTable: React.FunctionComponent<{
     }
 
     return () => {
+      vResult.cancelAll();
       if (c >= 0) {
         window.clearInterval(c);
       }
       if (queue.current !== undefined && queue.current.t) {
-        window.clearTimeout(queue.current.t);  /* eslint "react-hooks/exhaustive-deps": "off" */
+        window.clearTimeout(
+          queue.current.t
+        ); /* eslint "react-hooks/exhaustive-deps": "off" */
       }
     };
   }, [options]);
