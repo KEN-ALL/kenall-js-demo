@@ -7,7 +7,7 @@ import {
 import React from 'react';
 import { FixedSizeList } from 'react-window';
 import { useTable, useAbsoluteLayout } from 'react-table';
-import { useForm, UseFormRegisterReturn } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { api } from '../kenall';
 import { BrowserConfigContext } from '../context';
 import CloseIcon from '@mui/icons-material/Cancel';
@@ -340,11 +340,14 @@ const defaultColumn = {
   },
 };
 
+type ReadyState = 0 | 1;
+
 const SearchResultTable: React.FunctionComponent<{
   options: NTACorporateInfoSearcherOptions;
   height: number;
   onSelect?: (rec: NTACorporateInfo) => void;
-}> = ({ options, height, onSelect }) => {
+  onReadyStateChange?: (state: ReadyState) => void;
+}> = ({ options, height, onSelect, onReadyStateChange }) => {
   const { scrollbarWidth } = React.useContext(BrowserConfigContext);
   type RowPromiseInitiator = () => Promise<NTACorporateInfo | undefined>;
   const [data, setData] = React.useState<
@@ -395,13 +398,9 @@ const SearchResultTable: React.FunctionComponent<{
 
       let continuation: Continuation | undefined = (() => {
         const step = 10000;
-        let i = 0;
         const mf = (n: number) => () => {
-          if (i >= count) {
-            return undefined;
-          }
-          n = Math.min(n + step, count);
-          for (; i < n; i++) {
+          const nn = Math.min(n + step, count);
+          for (let i = n; i < nn; i++) {
             ((i) => {
               result.push(
                 () =>
@@ -416,13 +415,12 @@ const SearchResultTable: React.FunctionComponent<{
             })(i);
           }
           setData([count, result]);
-          return mf(n);
+          return nn < count ? mf(nn) : undefined;
         };
         return mf(0);
       })();
 
       continuation = continuation();
-
       c = window.setInterval(() => {
         if (continuation === undefined) {
           window.clearInterval(c);
@@ -430,11 +428,16 @@ const SearchResultTable: React.FunctionComponent<{
           continuation = continuation();
         }
       }, 10000);
+
+      onReadyStateChange && onReadyStateChange(0);
     });
 
     if (listRef.current !== null) {
       listRef.current.scrollTo(0);
     }
+    setData([undefined, []]);
+
+    onReadyStateChange && onReadyStateChange(1);
 
     return () => {
       vResult.cancelAll();
@@ -445,6 +448,9 @@ const SearchResultTable: React.FunctionComponent<{
         window.clearTimeout(
           queue.current.t
         ); /* eslint "react-hooks/exhaustive-deps": "off" */
+        queue.current.t = undefined;
+        queue.current.fs = [];
+        queue.current.bags = {};
       }
     };
   }, [options]);
@@ -554,7 +560,7 @@ const SearchResultTable: React.FunctionComponent<{
         </div>
 
         <div className="modal-table-footer">
-          {data[0] && `${data[0]}件見つかりました`}
+          {data[0] !== undefined ? `${data[0]}件見つかりました` : ''}
         </div>
       </div>
     </>
@@ -573,30 +579,44 @@ const Modal: React.FunctionComponent<{
   const onSubmit = (d: SearchParams) => {
     setOptions(buildSearchArgs(d));
   };
+  const [disabled, setDisabled] = React.useState<boolean>(false);
+  const onReadyStateChange = (state: ReadyState) => {
+    switch (state) {
+      case 0:
+        setDisabled(false);
+        break;
+      case 1:
+        setDisabled(true);
+    }
+  };
 
   const { register, handleSubmit, reset } = useForm<SearchParams>();
 
-  const Select: React.FunctionComponent<{
-    name: string;
-    options: { value: string; text: string }[];
-    placeholder?: string;
-    register: UseFormRegisterReturn;
-    className?: string;
-  }> = ({ name, options, placeholder, register, className }) => {
-    return (
-      <select
-        className={`border-0 rounded-md text-gray-600 pl-2 pr-8 text-sm ${className}`}
-        {...register}
-      >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map(({ value, text }, i) => (
-          <option value={value} key={i}>
-            {text}
-          </option>
-        ))}
-      </select>
-    );
-  };
+  const Select: React.FunctionComponent<
+    {
+      name: string;
+      options: { value: string; text: string }[];
+      placeholder?: string;
+      className?: string;
+    } & React.RefAttributes<HTMLSelectElement> &
+      React.SelectHTMLAttributes<HTMLSelectElement>
+  > = React.forwardRef(
+    ({ name, options, placeholder, className, ...params }, ref) => {
+      return (
+        <select
+          className={`border-0 rounded-md text-gray-600 pl-2 pr-8 text-sm ${className}`}
+          {...params}
+        >
+          {placeholder && <option value="">{placeholder}</option>}
+          {options.map(({ value, text }, i) => (
+            <option value={value} key={i}>
+              {text}
+            </option>
+          ))}
+        </select>
+      );
+    }
+  );
 
   const [searchResultTableHeight, setSearchResultTableHeight] =
     React.useState<number>(48);
@@ -643,39 +663,41 @@ const Modal: React.FunctionComponent<{
                   className="border-0 rounded-md px-2 leading-8 form-input-text w-full"
                   type="text"
                   placeholder="法人名で検索(例: オープンコレクター)"
+                  disabled={disabled}
                   {...register('corporateName')}
                 ></input>
               </div>
               <div className="flex flex-row flex-wrap -mr-1">
                 <div className="mt-1 mr-1">
                   <Select
-                    name="prefecture_name"
                     options={prefectures}
                     placeholder="(全都道府県)"
-                    register={register('prefecture')}
+                    disabled={disabled}
+                    {...register('prefecture')}
                   />
                 </div>
                 <div className="mt-1 mr-1 flex-auto">
                   <Select
-                    name="kind"
                     options={kinds}
                     placeholder="(全種別)"
-                    register={register('kind')}
+                    disabled={disabled}
                     className="w-full"
+                    {...register('kind')}
                   />
                 </div>
                 <div className="mt-1 mr-1 flex-auto">
                   <Select
-                    name="mode"
                     options={modes}
-                    register={register('mode')}
+                    disabled={disabled}
                     className="w-full"
+                    {...register('mode')}
                   />
                 </div>
                 <div className="mt-1 mr-1 flex-auto basis-full">
                   <button
-                    className="rounded-md bg-gray-300 p-2 w-full whitespace-nowrap text-sm"
                     type="submit"
+                    className="rounded-md bg-gray-300 p-2 w-full whitespace-nowrap text-sm"
+                    disabled={disabled}
                   >
                     検索
                   </button>
@@ -689,6 +711,7 @@ const Modal: React.FunctionComponent<{
                 options={options}
                 height={searchResultTableHeight}
                 onSelect={onSelect}
+                onReadyStateChange={onReadyStateChange}
               />
             )}
           </div>
