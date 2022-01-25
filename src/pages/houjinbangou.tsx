@@ -594,17 +594,17 @@ const Modal: React.FunctionComponent<{
 
   const Select: React.FunctionComponent<
     {
-      name: string;
       options: { value: string; text: string }[];
       placeholder?: string;
       className?: string;
     } & React.RefAttributes<HTMLSelectElement> &
       React.SelectHTMLAttributes<HTMLSelectElement>
   > = React.forwardRef(
-    ({ name, options, placeholder, className, ...params }, ref) => {
+    ({ options, placeholder, className, ...params }, ref) => {
       return (
         <select
           className={`border-0 rounded-md text-gray-600 pl-2 pr-8 text-sm ${className}`}
+          ref={ref}
           {...params}
         >
           {placeholder && <option value="">{placeholder}</option>}
@@ -646,6 +646,11 @@ const Modal: React.FunctionComponent<{
         !showFlag && 'hidden'
       }`}
     >
+      <style jsx>{`
+        button.bg-gray-300:disabled {
+          @apply bg-gray-400;
+        }
+      `}</style>
       <div className="bg-gray-500 bg-opacity-75 rounded-md w-full md:w-5/6 lg:w-3/4 md:h-1/2 h-full m-4 md:m-auto p-4 relative">
         <div className="absolute right-0 -top-5">
           <button onClick={onCloseButtonClick}>
