@@ -15,8 +15,21 @@
     "@types/react": "^17.0.38",
     "@types/react-autosuggest": "^10.1.5",
     "@types/react-dom": "^17.0.11",
+    "@types/react-table": "^7.7.9",
+    "@types/react-window": "^1.8.5",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
     "@xobotyi/scrollbar-width": "^1.9.5",
     "autoprefixer": "^9.8.6",
+    "eslint": "^7.11.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-config-react-app": "^6.0.0",
+    "eslint-import-resolver-typescript": "^2.5.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-webpack-plugin": "^2.5.2",
     "postcss": "^8.2.10",
     "prettier": "^2.5.1",
     "react": "^17.0.2",
@@ -30,14 +43,15 @@
     "styled-jsx": "^5.0.0",
     "styled-jsx-plugin-postcss": "^4.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.2",
-    "typescript": "^4.5.0"
+    "typescript": "4.2.4"
   },
   "scripts": {
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",
-    "format": "prettier -w ."
+    "format": "prettier -w .",
+    "lint": "eslint ."
   },
   "eslintConfig": {
     "extends": [
@@ -55,9 +69,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@types/react-table": "^7.7.9",
-    "@types/react-window": "^1.8.5"
   }
 }
