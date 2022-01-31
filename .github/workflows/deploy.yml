@@ -30,6 +30,13 @@ jobs:
         run: |
           set -xe
           npm run build
+          src="build/index.html"
+          for f in src/pages/*.tsx; do
+            dest="build/$(echo "$f" | sed -e 's#src/pages/\([^/]*\)\.tsx#\1.html#')"
+            if [ "${dest}" != "${src}" ]; then
+              cp "${src}" "${dest}"
+            fi
+          done
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
