@@ -115,7 +115,7 @@ class VirtualizedSearchResult {
     Promise<NTACorporateInfo | undefined>,
     Promise<NTACorporateInfo | undefined>
   >();
-  private canceled: boolean = false;
+  private canceled = false;
 
   constructor(
     private api: KENALL,
@@ -147,7 +147,9 @@ class VirtualizedSearchResult {
     return true;
   }
 
-  cancelAll() {}
+  cancelAll() {
+    this.canceled = true;
+  }
 
   private makeCancelable(
     p: Promise<NTACorporateInfo | undefined>
@@ -174,7 +176,7 @@ class VirtualizedSearchResult {
         this.options.limit as number,
         respP.then(
           (resp) => resp.data,
-          (e) => {
+          () => {
             this.purge(chunk);
             return undefined;
           }
@@ -184,7 +186,7 @@ class VirtualizedSearchResult {
       this.lru.push(0);
       this._count = respP.then(
         (resp) => resp.count,
-        (e) => 0
+        () => 0
       );
     }
     return await this._count;
@@ -231,7 +233,7 @@ class VirtualizedSearchResult {
         limit,
         respP.then(
           (resp) => resp.data,
-          (e) => {
+          () => {
             this.purge(chunk);
             return undefined;
           }
@@ -365,7 +367,7 @@ const SearchResultTable: React.FunctionComponent<{
   const enqueue = (discriminator: any, f: () => void) => {
     const bags = queue.current.bags;
     const d = String(discriminator);
-    let bag: Array<() => void> | undefined = bags[d];
+    const bag: Array<() => void> | undefined = bags[d];
     if (bag === undefined) {
       queue.current.fs.push(d);
       bags[d] = [f];
@@ -388,7 +390,7 @@ const SearchResultTable: React.FunctionComponent<{
   };
 
   React.useEffect(() => {
-    let c: number = -1;
+    let c = -1;
     const vResult = new VirtualizedSearchResult(api, options, 100);
 
     vResult.count().then((count) => {
@@ -484,9 +486,9 @@ const SearchResultTable: React.FunctionComponent<{
             (() => row.original().then((rec) => rec && onSelect(rec)))
           }
         >
-          {row.cells.map((cell) => {
+          {row.cells.map((cell, i) => {
             return (
-              <div {...cell.getCellProps()} className="modal-table-td">
+              <div key={i} {...cell.getCellProps()} className="modal-table-td">
                 {cell.render('Cell')}
               </div>
             );
@@ -502,7 +504,7 @@ const SearchResultTable: React.FunctionComponent<{
     if (!elem) return;
     elem.parentNode.addEventListener(
       'scroll',
-      (e: React.UIEvent) => {
+      () => {
         if (rowContainerRef.current != null) {
           rowContainerRef.current.scrollLeft = elem.parentNode.scrollLeft;
         }
@@ -529,8 +531,12 @@ const SearchResultTable: React.FunctionComponent<{
                 })}
                 className="modal-table-tr"
               >
-                {headerGroup.headers.map((column) => (
-                  <div {...column.getHeaderProps()} className="modal-table-th">
+                {headerGroup.headers.map((column, i) => (
+                  <div
+                    key={i}
+                    {...column.getHeaderProps()}
+                    className="modal-table-th"
+                  >
                     {column.render('Header')}
                   </div>
                 ))}
@@ -805,7 +811,7 @@ type HoujinbangouForm = {
   address2: string;
 };
 
-const Houjinbangou = () => {
+const Houjinbangou: React.FunctionComponent = () => {
   const { register, getValues, setValue } = useForm<HoujinbangouForm>();
   const [searchParams, setSearchParams] = React.useState<
     SearchParams | undefined

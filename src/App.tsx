@@ -5,7 +5,7 @@ import Lookup from './pages/lookup';
 import ReverseLookup from './pages/reverse-lookup';
 import Houjinbangou from './pages/houjinbangou';
 
-function App() {
+export const App: React.FunctionComponent = () => {
   const [menuShown, setMenuShown] = React.useState<boolean>(false);
 
   return (
@@ -75,6 +75,6 @@ function App() {
       </main>
     </div>
   );
-}
+};
 
 export default App;

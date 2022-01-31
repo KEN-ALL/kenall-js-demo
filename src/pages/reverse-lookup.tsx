@@ -84,7 +84,7 @@ const ReverseLookup: React.FunctionComponent = () => {
 
   const onCandidateSelected: OnSuggestionSelected<Address> = (
     e,
-    { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }
+    { suggestionValue }
   ) => {
     setAddress(suggestionValue);
   };
