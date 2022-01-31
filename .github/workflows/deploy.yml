@@ -1,0 +1,38 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  build-and-deploy:
+    name: Build and deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: |
+          npm i
+
+      - name: Build
+        env:
+          PUBLIC_URL: 'https://ken-all.github.io/kenall-js-demo'
+          REACT_APP_BASE_URL: '/kenall-js-demo'
+          REACT_APP_KENALL_API_KEY: ${{ secrets.KENALL_API_KEY }}
+        run: |
+          set -xe
+          npm run build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build

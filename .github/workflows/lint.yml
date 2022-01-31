@@ -1,4 +1,4 @@
-name: CI
+name: Lint
 
 on:
   pull_request:
@@ -6,8 +6,8 @@ on:
       - '**'
 
 jobs:
-  linting-and-testing:
-    name: Do linting and testing
+  lint:
+    name: Do linting
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
