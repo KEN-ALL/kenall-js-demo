@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'chore/deploy-automatically'
 
 jobs:
   build-and-deploy:
