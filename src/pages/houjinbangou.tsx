@@ -486,9 +486,10 @@ const SearchResultTable: React.FunctionComponent<{
             (() => row.original().then((rec) => rec && onSelect(rec)))
           }
         >
-          {row.cells.map((cell, i) => {
+          {row.cells.map((cell) => {
             return (
-              <div key={i} {...cell.getCellProps()} className="modal-table-td">
+              // eslint-disable-next-line react/jsx-key
+              <div {...cell.getCellProps()} className="modal-table-td">
                 {cell.render('Cell')}
               </div>
             );
@@ -531,12 +532,9 @@ const SearchResultTable: React.FunctionComponent<{
                 })}
                 className="modal-table-tr"
               >
-                {headerGroup.headers.map((column, i) => (
-                  <div
-                    key={i}
-                    {...column.getHeaderProps()}
-                    className="modal-table-th"
-                  >
+                {headerGroup.headers.map((column) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <div {...column.getHeaderProps()} className="modal-table-th">
                     {column.render('Header')}
                   </div>
                 ))}
