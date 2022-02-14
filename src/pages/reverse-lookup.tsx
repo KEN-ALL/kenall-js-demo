@@ -39,7 +39,7 @@ type AddressSearcher = (options: AddressSearcherOptions) => Promise<Candidates>;
 const searchAddresses: AddressSearcher = (() => {
   const cache: { [k: string]: Candidates } = {};
   const generateKeyFromOptions = (options: AddressSearcherOptions): string =>
-    `${options.query}:${options.limit}`;
+    `${options.q}:${options.limit}`;
   return async (options: AddressSearcherOptions) => {
     const k = generateKeyFromOptions(options);
     let candidates: Candidates | undefined = cache[k];
