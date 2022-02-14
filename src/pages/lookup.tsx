@@ -117,11 +117,11 @@ const buildAddressLines = (addresses: Address[]): [string, string] => {
     const nKoazas = countVariations(addresses, (address) => address.koaza);
     if (nKoazas === 1) {
       const nKyotoStreets = countVariations(
-        addresses,
+        addresses.filter((address) => Boolean(address.kyoto_street)),
         (address) => address.kyoto_street
       );
       if (nKyotoStreets === 1) {
-        elements.push(addresses[0].kyoto_street);
+        elements.push(addresses[0].kyoto_street || '');
       }
       elements.push(addresses[0].town);
       elements.push(addresses[0].koaza);
