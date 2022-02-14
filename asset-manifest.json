@@ -1,20 +1,20 @@
 {
   "files": {
     "main.css": "https://ken-all.github.io/kenall-js-demo/static/css/main.eafc0d8d.chunk.css",
-    "main.js": "https://ken-all.github.io/kenall-js-demo/static/js/main.f5b6beb1.chunk.js",
-    "main.js.map": "https://ken-all.github.io/kenall-js-demo/static/js/main.f5b6beb1.chunk.js.map",
+    "main.js": "https://ken-all.github.io/kenall-js-demo/static/js/main.180e0a0f.chunk.js",
+    "main.js.map": "https://ken-all.github.io/kenall-js-demo/static/js/main.180e0a0f.chunk.js.map",
     "runtime-main.js": "https://ken-all.github.io/kenall-js-demo/static/js/runtime-main.252aa91f.js",
     "runtime-main.js.map": "https://ken-all.github.io/kenall-js-demo/static/js/runtime-main.252aa91f.js.map",
-    "static/js/2.27fa94ae.chunk.js": "https://ken-all.github.io/kenall-js-demo/static/js/2.27fa94ae.chunk.js",
-    "static/js/2.27fa94ae.chunk.js.map": "https://ken-all.github.io/kenall-js-demo/static/js/2.27fa94ae.chunk.js.map",
+    "static/js/2.eb1a353a.chunk.js": "https://ken-all.github.io/kenall-js-demo/static/js/2.eb1a353a.chunk.js",
+    "static/js/2.eb1a353a.chunk.js.map": "https://ken-all.github.io/kenall-js-demo/static/js/2.eb1a353a.chunk.js.map",
     "index.html": "https://ken-all.github.io/kenall-js-demo/index.html",
     "static/css/main.eafc0d8d.chunk.css.map": "https://ken-all.github.io/kenall-js-demo/static/css/main.eafc0d8d.chunk.css.map",
-    "static/js/2.27fa94ae.chunk.js.LICENSE.txt": "https://ken-all.github.io/kenall-js-demo/static/js/2.27fa94ae.chunk.js.LICENSE.txt"
+    "static/js/2.eb1a353a.chunk.js.LICENSE.txt": "https://ken-all.github.io/kenall-js-demo/static/js/2.eb1a353a.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.252aa91f.js",
-    "static/js/2.27fa94ae.chunk.js",
+    "static/js/2.eb1a353a.chunk.js",
     "static/css/main.eafc0d8d.chunk.css",
-    "static/js/main.f5b6beb1.chunk.js"
+    "static/js/main.180e0a0f.chunk.js"
   ]
 }
