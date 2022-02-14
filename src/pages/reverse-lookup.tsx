@@ -69,7 +69,7 @@ const ReverseLookup: React.FunctionComponent = () => {
     }
     try {
       const result = await searchAddresses({
-        query: address,
+        q: address,
         limit: 20,
       });
       setCandidates(result);
