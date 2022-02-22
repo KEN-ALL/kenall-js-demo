@@ -270,14 +270,28 @@ type SearchParams = {
   mode?: NTACorporateInfoSearchMode;
 };
 
+const quote = (v: string): string => `"${v.replace(/"/g, '\\"')}"`;
+
 const buildSearchArgs = (
   params: SearchParams
 ): NTACorporateInfoSearcherOptions => {
-  let query = `(name:${params.corporateName} OR furigana:${params.corporateName})`;
-  query += params.prefecture ? ` AND prefecture_name:${params.prefecture}` : '';
-  query += params.kind ? ` AND _facet_kind:/${kindsMap.get(params.kind)}` : '';
+  const query: Array<string> = [];
+  const corporateName =
+    params.corporateName !== undefined ? params.corporateName.trim() : '';
+  const quotedCorporateName = corporateName !== '' ? quote(corporateName) : '';
+  if (quotedCorporateName !== '') {
+    query.push(
+      `(name:${quotedCorporateName} OR furigana:${quotedCorporateName})`
+    );
+  }
+  if (params.prefecture) {
+    query.push(`prefecture_name:${params.prefecture}`);
+  }
+  if (params.kind) {
+    query.push(`_facet_kind:/${kindsMap.get(params.kind)}`);
+  }
   const mode = params.mode ? params.mode : 'partial';
-  return { query: query, mode: mode };
+  return { query: query.join(' AND '), mode: mode };
 };
 
 const kindsMap = new Map<string, string>(
