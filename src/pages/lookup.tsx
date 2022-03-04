@@ -273,9 +273,7 @@ const Form: React.FunctionComponent = () => {
             <input
               id="form-postal"
               type="text"
-              minLength={7}
-              maxLength={8}
-              pattern="\d*"
+              pattern="\d{3}-?\d{4}"
               autoComplete="shipping postal-code"
               placeholder="郵便番号"
               className="form-field-elem w-28"
