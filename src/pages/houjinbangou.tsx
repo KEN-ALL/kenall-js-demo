@@ -6,7 +6,13 @@ import {
 } from '@ken-all/kenall';
 import React from 'react';
 import { FixedSizeList } from 'react-window';
-import { useTable, useAbsoluteLayout } from 'react-table';
+import {
+  useTable,
+  useAbsoluteLayout,
+  Column,
+  CellProps,
+  Renderer,
+} from 'react-table';
 import { useForm } from 'react-hook-form';
 import { api } from '../kenall';
 import { BrowserConfigContext } from '../context';
@@ -338,8 +344,8 @@ const columns = [
   },
 ];
 
-const defaultColumn = {
-  Cell: ({ value }: { value: () => Promise<string> }): React.ReactNode => {
+const defaultColumn: Partial<Column<RowPromiseInitiator>> = {
+  Cell: (({ value }: { value: () => Promise<string> }): React.ReactNode => {
     const [resolvedValue, setResolvedValue] = React.useState<
       string | undefined
     >(undefined);
@@ -353,10 +359,11 @@ const defaultColumn = {
         <div className="inline-block align-baseline bg-gray-200 w-32 h-3"></div>
       )
     );
-  },
+  }) as Renderer<CellProps<RowPromiseInitiator, any>>,
 };
 
 type ReadyState = 0 | 1;
+type RowPromiseInitiator = () => Promise<NTACorporateInfo | undefined>;
 
 const SearchResultTable: React.FunctionComponent<{
   options: NTACorporateInfoSearcherOptions;
@@ -365,7 +372,6 @@ const SearchResultTable: React.FunctionComponent<{
   onReadyStateChange?: (state: ReadyState) => void;
 }> = ({ options, height, onSelect, onReadyStateChange }) => {
   const { scrollbarWidth } = React.useContext(BrowserConfigContext);
-  type RowPromiseInitiator = () => Promise<NTACorporateInfo | undefined>;
   const [data, setData] = React.useState<
     [number | undefined, RowPromiseInitiator[]]
   >([undefined, []]);
@@ -481,7 +487,7 @@ const SearchResultTable: React.FunctionComponent<{
   } = useTable({ columns, data: data[1], defaultColumn }, useAbsoluteLayout);
 
   const RenderRow = React.useCallback(
-    ({ index, style }) => {
+    ({ index, style }: { index: number; style: any }) => {
       const row = rows[index];
       prepareRow(row);
       return (
@@ -515,13 +521,14 @@ const SearchResultTable: React.FunctionComponent<{
   );
 
   const rowContainerRef = React.useRef<HTMLDivElement>(null);
-  const innerRef = React.useCallback((elem) => {
-    if (!elem) return;
-    elem.parentNode.addEventListener(
+  const innerRef = React.useCallback((elem: HTMLDivElement) => {
+    if (!elem || !elem.parentNode) return;
+    const parentNode = elem.parentNode as HTMLDivElement;
+    parentNode.addEventListener(
       'scroll',
       () => {
         if (rowContainerRef.current != null) {
-          rowContainerRef.current.scrollLeft = elem.parentNode.scrollLeft;
+          rowContainerRef.current.scrollLeft = parentNode.scrollLeft;
         }
       },
       false

@@ -56,7 +56,7 @@ const getAddresses = (() => {
   };
 })();
 
-const countVariations = <T extends unknown>(
+const countVariations = <T,>(
   items: Iterable<T>,
   callback: (item: T) => any
 ): number => {
