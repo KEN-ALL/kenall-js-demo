@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { scrollbarWidth } from '@xobotyi/scrollbar-width';
 import App from './App';
@@ -37,4 +37,8 @@ const Root: React.FunctionComponent = () => {
   );
 };
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const container = document.getElementById('root');
+if (container) {
+  const root = createRoot(container);
+  root.render(<Root />);
+}
