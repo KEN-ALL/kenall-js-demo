@@ -498,6 +498,7 @@ const SearchResultTable: React.FunctionComponent<{
               minWidth: totalColumnsWidth,
             },
           })}
+          key={`row-${index}`}
           className={`modal-table-tr ${
             index % 2 ? 'modal-table-row-odd' : 'modal-table-row-even'
           }`}
@@ -506,14 +507,15 @@ const SearchResultTable: React.FunctionComponent<{
             (() => row.original().then((rec) => rec && onSelect(rec)))
           }
         >
-          {row.cells.map((cell) => {
-            return (
-              // eslint-disable-next-line react/jsx-key
-              <div {...cell.getCellProps()} className="modal-table-td">
-                {cell.render('Cell')}
-              </div>
-            );
-          })}
+          {row.cells.map((cell, i) => (
+            <div
+              {...cell.getCellProps()}
+              key={`cell-${i}`}
+              className="modal-table-td"
+            >
+              {cell.render('Cell')}
+            </div>
+          ))}
         </div>
       );
     },
@@ -551,11 +553,15 @@ const SearchResultTable: React.FunctionComponent<{
                     width: totalColumnsWidth + scrollbarWidth,
                   },
                 })}
+                key={null}
                 className="modal-table-tr"
               >
-                {headerGroup.headers.map((column) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <div {...column.getHeaderProps()} className="modal-table-th">
+                {headerGroup.headers.map((column, i) => (
+                  <div
+                    {...column.getHeaderProps()}
+                    key={`column-${i}`}
+                    className="modal-table-th"
+                  >
                     {column.render('Header')}
                   </div>
                 ))}
