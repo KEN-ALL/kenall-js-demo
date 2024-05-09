@@ -1,6 +1,6 @@
 import {
   KENALL,
-  NTACorporateInfo,
+  NTACorporateInfoV20240101,
   NTACorporateInfoSearcherOptions,
   NTACorporateInfoSearchMode,
 } from '@ken-all/kenall';
@@ -96,12 +96,12 @@ class NTACorporateInfoChunk {
   constructor(
     public offset: number,
     public length: number,
-    public data: Promise<NTACorporateInfo[] | undefined>
+    public data: Promise<NTACorporateInfoV20240101[] | undefined>
   ) {}
 
   pointedBy(
     i: number
-  ): [number, Promise<NTACorporateInfo | undefined> | undefined] {
+  ): [number, Promise<NTACorporateInfoV20240101 | undefined> | undefined] {
     if (i < this.offset) {
       return [-1, undefined];
     } else if (i >= this.offset + this.length) {
@@ -118,8 +118,8 @@ class VirtualizedSearchResult {
   options: NTACorporateInfoSearcherOptions;
   private _count: Promise<number> | undefined = undefined;
   private cancelables = new WeakMap<
-    Promise<NTACorporateInfo | undefined>,
-    Promise<NTACorporateInfo | undefined>
+    Promise<NTACorporateInfoV20240101 | undefined>,
+    Promise<NTACorporateInfoV20240101 | undefined>
   >();
   private canceled = false;
 
@@ -158,8 +158,8 @@ class VirtualizedSearchResult {
   }
 
   private makeCancelable(
-    p: Promise<NTACorporateInfo | undefined>
-  ): Promise<NTACorporateInfo | undefined> {
+    p: Promise<NTACorporateInfoV20240101 | undefined>
+  ): Promise<NTACorporateInfoV20240101 | undefined> {
     let cancelable = this.cancelables.get(p);
     if (cancelable === undefined) {
       cancelable = new Promise((resolve, reject) => {
@@ -176,7 +176,7 @@ class VirtualizedSearchResult {
 
   async count(): Promise<number> {
     if (this._count === undefined) {
-      const respP = this.api.searchNTACorporateInfo(this.options);
+      const respP = this.api.searchNTACorporateInfo(this.options, '2024-01-01');
       const chunk: NTACorporateInfoChunk = new NTACorporateInfoChunk(
         0,
         this.options.limit as number,
@@ -198,7 +198,7 @@ class VirtualizedSearchResult {
     return await this._count;
   }
 
-  async get(i: number): Promise<NTACorporateInfo | undefined> {
+  async get(i: number): Promise<NTACorporateInfoV20240101 | undefined> {
     if (i >= (await this.count())) {
       return undefined;
     }
@@ -230,10 +230,13 @@ class VirtualizedSearchResult {
       }
       const limit = this.options.limit as number;
       const chunkOffset = ((i / limit) | 0) * limit;
-      const respP = this.api.searchNTACorporateInfo({
-        ...this.options,
-        offset: chunkOffset,
-      });
+      const respP = this.api.searchNTACorporateInfo(
+        {
+          ...this.options,
+          offset: chunkOffset,
+        },
+        '2024-01-01'
+      );
       const chunk = new NTACorporateInfoChunk(
         chunkOffset,
         limit,
@@ -304,13 +307,27 @@ const kindsMap = new Map<string, string>(
   kinds.map(({ value, text }) => [value, text])
 );
 
-const makeAccessor = <T extends keyof NTACorporateInfo>(
-  propName: T
+const makeAccessor = <
+  T extends keyof NTACorporateInfoV20240101,
+  K extends keyof NTACorporateInfoV20240101['address'],
+>(
+  propName: T,
+  addressPropName?: K
 ): ((
-  recP: () => Promise<NTACorporateInfo | undefined>
-) => () => Promise<NTACorporateInfo[T] | undefined>) => {
+  recP: () => Promise<NTACorporateInfoV20240101 | undefined>
+) => () => Promise<
+  | NTACorporateInfoV20240101[T]
+  | NTACorporateInfoV20240101['address'][K]
+  | undefined
+>) => {
   return (recP) => () =>
-    recP().then((rec) => (rec !== undefined ? rec[propName] : undefined));
+    recP().then((rec) => {
+      return rec === undefined || !rec[propName]
+        ? undefined
+        : addressPropName
+          ? rec.address[addressPropName] ?? undefined
+          : rec[propName];
+    });
 };
 
 const columns = [
@@ -324,21 +341,21 @@ const columns = [
   {
     Header: '都道府県',
     id: 'prefecture_name',
-    accessor: makeAccessor('prefecture_name'),
+    accessor: makeAccessor('address', 'prefecture'),
     width: 80,
     minWidth: 80,
   },
   {
     Header: '市区町村',
     id: 'city_name',
-    accessor: makeAccessor('city_name'),
+    accessor: makeAccessor('address', 'city'),
     width: 120,
     minWidth: 120,
   },
   {
     Header: '市区町村以下の住所',
     id: 'street_number',
-    accessor: makeAccessor('street_number'),
+    accessor: makeAccessor('address', 'street_number'),
     width: 500,
     minWidth: 500,
   },
@@ -363,12 +380,12 @@ const defaultColumn: Partial<Column<RowPromiseInitiator>> = {
 };
 
 type ReadyState = 0 | 1;
-type RowPromiseInitiator = () => Promise<NTACorporateInfo | undefined>;
+type RowPromiseInitiator = () => Promise<NTACorporateInfoV20240101 | undefined>;
 
 const SearchResultTable: React.FunctionComponent<{
   options: NTACorporateInfoSearcherOptions;
   height: number;
-  onSelect?: (rec: NTACorporateInfo) => void;
+  onSelect?: (rec: NTACorporateInfoV20240101) => void;
   onReadyStateChange?: (state: ReadyState) => void;
 }> = ({ options, height, onSelect, onReadyStateChange }) => {
   const { scrollbarWidth } = React.useContext(BrowserConfigContext);
@@ -426,7 +443,7 @@ const SearchResultTable: React.FunctionComponent<{
             ((i) => {
               result.push(
                 () =>
-                  new Promise<NTACorporateInfo | undefined>(
+                  new Promise<NTACorporateInfoV20240101 | undefined>(
                     (resolve, reject) => {
                       enqueue(i, () => {
                         vResult.get(i).then(resolve, reject);
@@ -498,6 +515,7 @@ const SearchResultTable: React.FunctionComponent<{
               minWidth: totalColumnsWidth,
             },
           })}
+          key={`row-${index}`}
           className={`modal-table-tr ${
             index % 2 ? 'modal-table-row-odd' : 'modal-table-row-even'
           }`}
@@ -506,14 +524,15 @@ const SearchResultTable: React.FunctionComponent<{
             (() => row.original().then((rec) => rec && onSelect(rec)))
           }
         >
-          {row.cells.map((cell) => {
-            return (
-              // eslint-disable-next-line react/jsx-key
-              <div {...cell.getCellProps()} className="modal-table-td">
-                {cell.render('Cell')}
-              </div>
-            );
-          })}
+          {row.cells.map((cell, i) => (
+            <div
+              {...cell.getCellProps()}
+              key={`cell-${i}`}
+              className="modal-table-td"
+            >
+              {cell.render('Cell')}
+            </div>
+          ))}
         </div>
       );
     },
@@ -551,11 +570,15 @@ const SearchResultTable: React.FunctionComponent<{
                     width: totalColumnsWidth + scrollbarWidth,
                   },
                 })}
+                key={null}
                 className="modal-table-tr"
               >
-                {headerGroup.headers.map((column) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <div {...column.getHeaderProps()} className="modal-table-th">
+                {headerGroup.headers.map((column, i) => (
+                  <div
+                    {...column.getHeaderProps()}
+                    key={`column-${i}`}
+                    className="modal-table-th"
+                  >
                     {column.render('Header')}
                   </div>
                 ))}
@@ -596,7 +619,7 @@ const Modal: React.FunctionComponent<{
   showFlag: boolean | undefined;
   defaultParams: SearchParams | undefined;
   onCloseButtonClick?: React.MouseEventHandler;
-  onSelect?: (rec: NTACorporateInfo) => void;
+  onSelect?: (rec: NTACorporateInfoV20240101) => void;
 }> = ({ showFlag, defaultParams, onCloseButtonClick, onSelect }) => {
   const [options, setOptions] = React.useState<
     NTACorporateInfoSearcherOptions | undefined
@@ -848,17 +871,23 @@ const Houjinbangou: React.FunctionComponent = () => {
     setShowModalFlag(true);
   };
 
-  const onCorporateSelect = (rec: NTACorporateInfo) => {
+  const onCorporateSelect = (rec: NTACorporateInfoV20240101) => {
     setShowModalFlag(false);
     setValue('corporateName', rec.name);
     setValue('corporateNumber', rec.corporate_number);
-    setValue('postalCode', rec.post_code || '');
-    setValue('prefecture', rec.prefecture_name || '');
-    setValue('city', rec.city_name || '');
-    setValue('address1', rec.town ? rec.town + (rec.block_lot_num || '') : '');
+    setValue('postalCode', rec.address.postal_code || '');
+    setValue('prefecture', rec.address.prefecture || '');
+    setValue('city', rec.address.city || '');
+    setValue(
+      'address1',
+      rec.address.town
+        ? rec.address.town + (rec.address.block_lot_num || '')
+        : ''
+    );
     setValue(
       'address2',
-      (rec.building ? rec.building + ' ' : '') + (rec.floor_room || '')
+      (rec.address.building ? rec.address.building + ' ' : '') +
+        (rec.address.floor_room || '')
     );
   };
 
