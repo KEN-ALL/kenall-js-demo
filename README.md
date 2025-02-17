@@ -3,15 +3,21 @@
 ## 実行方法
 
 ```
-$ REACT_APP_KENALL_API_KEY=[APIキー] REACT_APP_KENALL_API_BASE_URL=https://api.kenall.jp/v1 npm run start
+$ VITE_BASE_URL=/ VITE_KENALL_API_KEY=[APIキー] VITE_KENALL_API_BASE_URL=https://api.kenall.jp/v1 npm run dev
 ```
 
-としてください。ブラウザが立ち上がり、デモページが表示されます。
+としてください。
+
+```
+http://localhost:3000
+```
+
+をブラウザで開くと、デモページが表示されます。
 
 ## ビルド方法
 
 ```
-$ REACT_APP_KENALL_API_KEY=[APIキー] REACT_APP_KENALL_API_BASE_URL=https://api.kenall.jp/v1 npm run build
+$ VITE_BASE_URL=/ VITE_KENALL_API_KEY=[APIキー] VITE_KENALL_API_BASE_URL=https://api.kenall.jp/v1 npm run build
 ```
 
-としてください。 `build/` ディレクトリ配下にファイルが生成されます。
+としてください。 `dist/` ディレクトリ配下にファイルが生成されます。

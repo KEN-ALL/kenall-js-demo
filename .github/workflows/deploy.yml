@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Use Node.js 16
-        uses: actions/setup-node@v1
+      - name: Use Node.js 22
+        uses: actions/setup-node@v4
         with:
-          node-version: 16
+          node-version: 22
 
       - name: Install dependencies
         run: |
@@ -25,21 +25,21 @@ jobs:
       - name: Build
         env:
           PUBLIC_URL: 'https://ken-all.github.io/kenall-js-demo'
-          REACT_APP_BASE_URL: '/kenall-js-demo'
-          REACT_APP_KENALL_API_KEY: ${{ secrets.KENALL_API_KEY }}
+          VITE_BASE_URL: '/kenall-js-demo'
+          VITE_KENALL_API_KEY: ${{ secrets.KENALL_API_KEY }}
         run: |
           set -xe
           npm run build
-          src="build/index.html"
+          src="dist/index.html"
           for f in src/pages/*.tsx; do
-            dest="build/$(echo "$f" | sed -e 's#src/pages/\([^/]*\)\.tsx#\1.html#')"
+            dest="dist/$(echo "$f" | sed -e 's#src/pages/\([^/]*\)\.tsx#\1.html#')"
             if [ "${dest}" != "${src}" ]; then
               cp "${src}" "${dest}"
             fi
           done
 
       - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build
+          publish_dir: ./dist
