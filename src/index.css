@@ -1,3 +1,106 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+.form-field-main {
+  @apply md:mb-0 mb-3;
+}
+
+.form-field-main {
+  @apply md:mb-0 mb-3;
+}
+
+.form-field-elem {
+  @apply border border-gray-300 rounded-md p-2;
+}
+
+.form-label {
+  @apply md:mt-2;
+}
+
+.form-label.nogap {
+  @apply md:mt-0;
+}
+
+.form-label-main {
+  display: block;
+}
+
+.form-label-main.required::after {
+  @apply text-gray-500 text-xs;
+  content: "*";
+  vertical-align: super;
+}
+
+.form-label-aux {
+  display: block;
+  @apply text-sm;
+}
+
+@media (min-width: 768px) {
+  .md-form-field-horiz {
+    grid-template-columns: minmax(8rem, 10rem) minmax(20rem, 1fr);
+  }
+}
+
+.modal-table-tr {
+  height: 32px;
+}
+
+.modal-table-thead {
+  height: 32px;
+  @apply bg-white border-b border-gray-300;
+}
+
+.modal-table-footer {
+  height: 32px;
+}
+
+.modal-table-td,
+.modal-table-th {
+  @apply overflow-hidden whitespace-nowrap p-1;
+}
+
+.modal-table-tbody {
+  @apply bg-white;
+}
+
+.modal-table-tbody .modal-table-tr:hover {
+  @apply bg-gray-200 cursor-pointer;
+}
+
+.modal-table-tbody .modal-table-tr:active {
+  @apply bg-gray-400;
+}
+
+.modal-table-tbody .modal-table-row-odd {
+  @apply bg-gray-100;
+}
+
+[role="combobox"] input {
+  @apply text-lg p-2 m-0 w-full rounded-md border border-gray-200;
+}
+
+.suggestions {
+  @apply absolute z-10 hidden rounded-md border border-gray-200;
+}
+
+.suggestions:has([role="option"]) {
+  @apply block;
+}
+
+.suggestions > [role="listbox"] {
+  @apply m-0 p-0;
+}
+
+.suggestions > [role="listbox"] > [role="option"] {
+  @apply cursor-pointer py-2 px-4 flex flex-row flex-nowrap items-baseline;
+}
+
+.suggestions > [role="listbox"] > [aria-selected="true"] {
+  @apply bg-blue-100;
+}
+
+@media (min-width: 768px) {
+  .md-form-field-horiz {
+    grid-template-columns: minmax(8rem, 10rem) minmax(20rem, 1fr);
+  }
+}

@@ -1,6 +1,6 @@
+import { type Address, KENALL } from '@ken-all/kenall';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { KENALL, Address } from '@ken-all/kenall';
 
 type Candidates = {
   data: Address[];
@@ -19,9 +19,9 @@ const SENTINEL: Candidates = {
 };
 
 const apiBaseUrl =
-  process.env.REACT_APP_KENALL_API_BASE_URL || 'https://api.kenall.jp/v1';
+  import.meta.env.VITE_KENALL_API_BASE_URL || 'https://api.kenall.jp/v1';
 
-const api = new KENALL(process.env.REACT_APP_KENALL_API_KEY as string, {
+const api = new KENALL(import.meta.env.VITE_KENALL_API_KEY as string, {
   apibase: apiBaseUrl,
   timeout: 10000,
 });
@@ -31,14 +31,14 @@ const canonicalizePostalCode = (postalCode: string): string =>
     .replace(/-/g, '')
     .replace(/[０１２３４５６７８９]/g, (c) =>
       String.fromCharCode(
-        '0'.charCodeAt(0) + (c.charCodeAt(0) - '０'.charCodeAt(0))
-      )
+        '0'.charCodeAt(0) + (c.charCodeAt(0) - '０'.charCodeAt(0)),
+      ),
     );
 
 const getAddresses = (() => {
   const cache: { [k: string]: Candidates } = {};
   return async (
-    postalCode: string | undefined
+    postalCode: string | undefined,
   ): Promise<[string, Candidates]> => {
     if (postalCode === undefined) {
       return ['', SENTINEL];
@@ -56,11 +56,11 @@ const getAddresses = (() => {
   };
 })();
 
-const countVariations = <T,>(
+const countVariations = <T, K extends string | number | symbol>(
   items: Iterable<T>,
-  callback: (item: T) => any
+  callback: (item: T) => K,
 ): number => {
-  const c: Record<any, number> = {};
+  const c = {} as Record<K, number>;
   let variations = 0;
   for (const item of items) {
     const k = callback(item);
@@ -118,7 +118,7 @@ const buildAddressLines = (addresses: Address[]): [string, string] => {
     if (nKoazas === 1) {
       const nKyotoStreets = countVariations(
         addresses.filter((address) => Boolean(address.kyoto_street)),
-        (address) => address.kyoto_street
+        (address) => address.kyoto_street || '',
       );
       if (nKyotoStreets === 1) {
         elements.push(addresses[0].kyoto_street || '');
@@ -139,7 +139,7 @@ const Indicator: React.FunctionComponent<{
   return (
     <div
       className={`overflow-hidden w-0 h-0 rounded-lg p-1 bg-red-400 animate-ping ${className}`}
-    ></div>
+    />
   );
 };
 
@@ -161,6 +161,7 @@ const Form: React.FunctionComponent = () => {
     'address2',
   ]);
 
+  const [postalCode, prefecture, city, address1, address2] = watchFields;
   React.useEffect(() => {
     // タイマーがすでに動いていればキャンセルする
     if (timerRef.current !== undefined) {
@@ -169,7 +170,6 @@ const Form: React.FunctionComponent = () => {
       setTimerRunning(false);
     }
     // すでに入力済みであれば何もしない
-    const [postalCode, prefecture, city, address1, address2] = watchFields;
     if (prefecture || city || address1 || address2) {
       return;
     }
@@ -222,48 +222,10 @@ const Form: React.FunctionComponent = () => {
         window.clearTimeout(timerRef.current);
       }
     };
-  }, watchFields); /* eslint "react-hooks/exhaustive-deps": "off" */
+  }, [getValues, setValue, postalCode, prefecture, city, address1, address2]);
 
   return (
     <>
-      <style jsx>{`
-        .form-field-main {
-          @apply md:mb-0 mb-3;
-        }
-
-        .form-field-elem {
-          @apply border-gray-300 rounded-md;
-        }
-
-        .form-label {
-          @apply md:mt-2;
-        }
-
-        .form-label.nogap {
-          @apply md:mt-0;
-        }
-
-        .form-label-main {
-          display: block;
-        }
-
-        .form-label-main.required::after {
-          @apply text-gray-500 text-xs;
-          content: '*';
-          vertical-align: super;
-        }
-
-        .form-label-aux {
-          display: block;
-          @apply text-sm;
-        }
-
-        @media (min-width: 768px) {
-          .md-form-field-horiz {
-            grid-template-columns: minmax(8rem, 10rem) minmax(20rem, 1fr);
-          }
-        }
-      `}</style>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid gap-2 md-form-field-horiz grid-cols-1">
           <label htmlFor="form-postal" className="form-label">

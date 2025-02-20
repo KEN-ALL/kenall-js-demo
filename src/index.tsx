@@ -1,12 +1,12 @@
+import { scrollbarWidth } from '@xobotyi/scrollbar-width';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router } from 'react-router-dom';
-import { scrollbarWidth } from '@xobotyi/scrollbar-width';
+import { BrowserRouter as Router } from 'react-router';
 import App from './App';
 import './index.css';
 import { BrowserConfigContext } from './context';
 
-const baseUrl = process.env.REACT_APP_BASE_URL || '/';
+const baseUrl = import.meta.env.VITE_BASE_URL || '/';
 
 const Root: React.FunctionComponent = () => {
   const [_scrollbarWidth, setScrollbarWidth] = React.useState<number>(0);
@@ -18,7 +18,7 @@ const Root: React.FunctionComponent = () => {
         () => {
           setScrollbarWidth(scrollbarWidth() || 0);
         },
-        false
+        false,
       );
     } else {
       setScrollbarWidth(w);

@@ -1,6 +1,6 @@
-import React from 'react';
+import type { Address, AddressSearcherOptions } from '@ken-all/kenall';
 import Downshift from 'downshift';
-import { Address, AddressSearcherOptions } from '@ken-all/kenall';
+import React from 'react';
 import { api } from '../kenall';
 
 type Candidates = {
@@ -74,31 +74,6 @@ const ReverseLookup: React.FunctionComponent = () => {
 
   return (
     <section className="flex flex-col">
-      <style jsx global>{`
-        [role='combobox'] input {
-          @apply text-lg p-2 m-0 w-full rounded-md border border-gray-200;
-        }
-
-        .suggestions {
-          @apply absolute z-10 hidden rounded-md border border-gray-200;
-        }
-
-        .suggestions:has([role='option']) {
-          @apply block;
-        }
-
-        .suggestions > [role='listbox'] {
-          @apply m-0 p-0;
-        }
-
-        .suggestions > [role='listbox'] > [role='option'] {
-          @apply cursor-pointer py-2 px-4 flex flex-row flex-nowrap items-baseline;
-        }
-
-        .suggestions > [role='listbox'] > [aria-selected='true'] {
-          @apply bg-blue-100;
-        }
-      `}</style>
       <header className="flex-1 align-center">
         <h1 className="mb-5 text-3xl font-bold text-gray-500">
           郵便番号逆引き検索
@@ -121,6 +96,7 @@ const ReverseLookup: React.FunctionComponent = () => {
           }) => (
             <div>
               <div className="mb-2">
+                {/* biome-ignore lint/a11y/noLabelWithoutControl: <explanation> */}
                 <label {...getLabelProps()}>住所を入力</label>
                 <p>
                   例: <span className="bg-gray-200 p-1 mr-1">愛知県</span>{' '}
@@ -144,7 +120,10 @@ const ReverseLookup: React.FunctionComponent = () => {
                               index: i,
                               item: candidate,
                             })}
-                            key={i}
+                            key={
+                              // biome-ignore lint/suspicious/noArrayIndexKey:
+                              i
+                            }
                             aria-selected={
                               highlightedIndex === i ? 'true' : 'false'
                             }

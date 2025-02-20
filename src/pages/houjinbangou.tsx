@@ -1,23 +1,23 @@
-import {
+import type {
   KENALL,
-  NTACorporateInfoV20240101,
-  NTACorporateInfoSearcherOptions,
   NTACorporateInfoSearchMode,
+  NTACorporateInfoSearcherOptions,
+  NTACorporateInfoV20240101,
 } from '@ken-all/kenall';
-import React from 'react';
-import { FixedSizeList } from 'react-window';
-import {
-  useTable,
-  useAbsoluteLayout,
-  Column,
-  CellProps,
-  Renderer,
-} from 'react-table';
-import { useForm } from 'react-hook-form';
-import { api } from '../kenall';
-import { BrowserConfigContext } from '../context';
 import CloseIcon from '@mui/icons-material/Cancel';
 import FilterIcon from '@mui/icons-material/Filter';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import {
+  type CellProps,
+  type Column,
+  type Renderer,
+  useAbsoluteLayout,
+  useTable,
+} from 'react-table';
+import { FixedSizeList } from 'react-window';
+import { BrowserConfigContext } from '../context';
+import { api } from '../kenall';
 
 type OptionPair = {
   value: string;
@@ -96,18 +96,18 @@ class NTACorporateInfoChunk {
   constructor(
     public offset: number,
     public length: number,
-    public data: Promise<NTACorporateInfoV20240101[] | undefined>
+    public data: Promise<NTACorporateInfoV20240101[] | undefined>,
   ) {}
 
   pointedBy(
-    i: number
+    i: number,
   ): [number, Promise<NTACorporateInfoV20240101 | undefined> | undefined] {
     if (i < this.offset) {
       return [-1, undefined];
     } else if (i >= this.offset + this.length) {
       return [1, undefined];
     } else {
-      return [0, this.data.then((data) => data && data[i - this.offset])];
+      return [0, this.data.then((data) => data?.[i - this.offset])];
     }
   }
 }
@@ -126,7 +126,7 @@ class VirtualizedSearchResult {
   constructor(
     private api: KENALL,
     options: NTACorporateInfoSearcherOptions,
-    private cacheSize: number
+    private cacheSize: number,
   ) {
     this.options = {
       limit: 30,
@@ -158,7 +158,7 @@ class VirtualizedSearchResult {
   }
 
   private makeCancelable(
-    p: Promise<NTACorporateInfoV20240101 | undefined>
+    p: Promise<NTACorporateInfoV20240101 | undefined>,
   ): Promise<NTACorporateInfoV20240101 | undefined> {
     let cancelable = this.cancelables.get(p);
     if (cancelable === undefined) {
@@ -185,14 +185,14 @@ class VirtualizedSearchResult {
           () => {
             this.purge(chunk);
             return undefined;
-          }
-        )
+          },
+        ),
       );
       this.sorted.push(chunk);
       this.lru.push(0);
       this._count = respP.then(
         (resp) => resp.count,
-        () => 0
+        () => 0,
       );
     }
     return await this._count;
@@ -209,9 +209,9 @@ class VirtualizedSearchResult {
       }
     }
     {
-      let s = 0,
-        e = this.sorted.length,
-        j = 0;
+      let s = 0;
+      let e = this.sorted.length;
+      let j = 0;
       while (s < e && s < this.sorted.length) {
         j = ((s + e) / 2) | 0;
         const chunk = this.sorted[j];
@@ -235,7 +235,7 @@ class VirtualizedSearchResult {
           ...this.options,
           offset: chunkOffset,
         },
-        '2024-01-01'
+        '2024-01-01',
       );
       const chunk = new NTACorporateInfoChunk(
         chunkOffset,
@@ -245,8 +245,8 @@ class VirtualizedSearchResult {
           () => {
             this.purge(chunk);
             return undefined;
-          }
-        )
+          },
+        ),
       );
       for (let i = 0; i < this.lru.length; ++i) {
         if (this.lru[i] >= j) {
@@ -282,7 +282,7 @@ type SearchParams = {
 const quote = (v: string): string => `"${v.replace(/"/g, '\\"')}"`;
 
 const buildSearchArgs = (
-  params: SearchParams
+  params: SearchParams,
 ): NTACorporateInfoSearcherOptions => {
   const query: Array<string> = [];
   const corporateName =
@@ -290,7 +290,7 @@ const buildSearchArgs = (
   const quotedCorporateName = corporateName !== '' ? quote(corporateName) : '';
   if (quotedCorporateName !== '') {
     query.push(
-      `(name:${quotedCorporateName} OR furigana:${quotedCorporateName})`
+      `(name:${quotedCorporateName} OR furigana:${quotedCorporateName})`,
     );
   }
   if (params.prefecture) {
@@ -304,7 +304,7 @@ const buildSearchArgs = (
 };
 
 const kindsMap = new Map<string, string>(
-  kinds.map(({ value, text }) => [value, text])
+  kinds.map(({ value, text }) => [value, text]),
 );
 
 const makeAccessor = <
@@ -312,9 +312,9 @@ const makeAccessor = <
   K extends keyof NTACorporateInfoV20240101['address'],
 >(
   propName: T,
-  addressPropName?: K
+  addressPropName?: K,
 ): ((
-  recP: () => Promise<NTACorporateInfoV20240101 | undefined>
+  recP: () => Promise<NTACorporateInfoV20240101 | undefined>,
 ) => () => Promise<
   | NTACorporateInfoV20240101[T]
   | NTACorporateInfoV20240101['address'][K]
@@ -325,7 +325,7 @@ const makeAccessor = <
       return rec === undefined || !rec[propName]
         ? undefined
         : addressPropName
-          ? rec.address[addressPropName] ?? undefined
+          ? (rec.address[addressPropName] ?? undefined)
           : rec[propName];
     });
 };
@@ -373,10 +373,10 @@ const defaultColumn: Partial<Column<RowPromiseInitiator>> = {
     }, [value]);
     return (
       resolvedValue || (
-        <div className="inline-block align-baseline bg-gray-200 w-32 h-3"></div>
+        <div className="inline-block align-baseline bg-gray-200 w-32 h-3" />
       )
     );
-  }) as Renderer<CellProps<RowPromiseInitiator, any>>,
+  }) as Renderer<CellProps<RowPromiseInitiator, unknown>>,
 };
 
 type ReadyState = 0 | 1;
@@ -399,32 +399,36 @@ const SearchResultTable: React.FunctionComponent<{
     fs: string[];
     bags: Record<string, Array<() => void>>;
     t: number | undefined;
-  }>({ fs: [], bags: {}, t: undefined });
-
-  const enqueue = (discriminator: any, f: () => void) => {
-    const bags = queue.current.bags;
-    const d = String(discriminator);
-    const bag: Array<() => void> | undefined = bags[d];
-    if (bag === undefined) {
-      queue.current.fs.push(d);
-      bags[d] = [f];
-    } else {
-      bag.push(f);
-    }
-    if (queue.current.t !== undefined) {
-      window.clearTimeout(queue.current.t);
-    }
-    queue.current.t = window.setTimeout(() => {
-      const fs = queue.current.fs;
+    enqueue: <T>(discriminator: T, f: () => void) => void;
+  }>({
+    fs: [],
+    bags: {},
+    t: undefined,
+    enqueue: <T,>(discriminator: T, f: () => void) => {
       const bags = queue.current.bags;
-      for (let i = Math.max(fs.length - 20, 0); i < fs.length; i++) {
-        bags[fs[i]].forEach((fn) => fn());
+      const d = String(discriminator);
+      const bag: Array<() => void> | undefined = bags[d];
+      if (bag === undefined) {
+        queue.current.fs.push(d);
+        bags[d] = [f];
+      } else {
+        bag.push(f);
       }
-      queue.current.t = undefined;
-      queue.current.fs = [];
-      queue.current.bags = {};
-    }, 500);
-  };
+      if (queue.current.t !== undefined) {
+        window.clearTimeout(queue.current.t);
+      }
+      queue.current.t = window.setTimeout(() => {
+        const fs = queue.current.fs;
+        const bags = queue.current.bags;
+        for (let i = Math.max(fs.length - 20, 0); i < fs.length; i++) {
+          bags[fs[i]].forEach((fn) => fn());
+        }
+        queue.current.t = undefined;
+        queue.current.fs = [];
+        queue.current.bags = {};
+      }, 500);
+    },
+  });
 
   React.useEffect(() => {
     let c = -1;
@@ -445,11 +449,11 @@ const SearchResultTable: React.FunctionComponent<{
                 () =>
                   new Promise<NTACorporateInfoV20240101 | undefined>(
                     (resolve, reject) => {
-                      enqueue(i, () => {
+                      queue.current.enqueue(i, () => {
                         vResult.get(i).then(resolve, reject);
                       });
-                    }
-                  )
+                    },
+                  ),
               );
             })(i);
           }
@@ -468,7 +472,7 @@ const SearchResultTable: React.FunctionComponent<{
         }
       }, 10000);
 
-      onReadyStateChange && onReadyStateChange(0);
+      onReadyStateChange?.(0);
     });
 
     if (listRef.current !== null) {
@@ -476,23 +480,23 @@ const SearchResultTable: React.FunctionComponent<{
     }
     setData([undefined, []]);
 
-    onReadyStateChange && onReadyStateChange(1);
+    onReadyStateChange?.(1);
 
     return () => {
       vResult.cancelAll();
       if (c >= 0) {
         window.clearInterval(c);
       }
-      if (queue.current !== undefined && queue.current.t) {
+      if (queue.current?.t) {
         window.clearTimeout(
-          queue.current.t
+          queue.current.t,
         ); /* eslint "react-hooks/exhaustive-deps": "off" */
         queue.current.t = undefined;
         queue.current.fs = [];
         queue.current.bags = {};
       }
     };
-  }, [options]);
+  }, [options, onReadyStateChange]);
 
   const {
     getTableProps,
@@ -504,7 +508,7 @@ const SearchResultTable: React.FunctionComponent<{
   } = useTable({ columns, data: data[1], defaultColumn }, useAbsoluteLayout);
 
   const RenderRow = React.useCallback(
-    ({ index, style }: { index: number; style: any }) => {
+    ({ index, style }: { index: number; style: React.CSSProperties }) => {
       const row = rows[index];
       prepareRow(row);
       return (
@@ -527,7 +531,10 @@ const SearchResultTable: React.FunctionComponent<{
           {row.cells.map((cell, i) => (
             <div
               {...cell.getCellProps()}
-              key={`cell-${i}`}
+              key={
+                // biome-ignore lint/suspicious/noArrayIndexKey:
+                `cell-${i}`
+              }
               className="modal-table-td"
             >
               {cell.render('Cell')}
@@ -536,7 +543,7 @@ const SearchResultTable: React.FunctionComponent<{
         </div>
       );
     },
-    [prepareRow, rows, height, onSelect, totalColumnsWidth]
+    [prepareRow, rows, onSelect, totalColumnsWidth],
   );
 
   const rowContainerRef = React.useRef<HTMLDivElement>(null);
@@ -550,7 +557,7 @@ const SearchResultTable: React.FunctionComponent<{
           rowContainerRef.current.scrollLeft = parentNode.scrollLeft;
         }
       },
-      false
+      false,
     );
   }, []);
 
@@ -560,7 +567,10 @@ const SearchResultTable: React.FunctionComponent<{
         <div className="modal-table-thead">
           {headerGroups.map((headerGroup, i) => (
             <div
-              key={i}
+              key={
+                // biome-ignore lint/suspicious/noArrayIndexKey:
+                i
+              }
               style={{ width: '100%', overflow: 'hidden' }}
               ref={rowContainerRef}
             >
@@ -576,7 +586,10 @@ const SearchResultTable: React.FunctionComponent<{
                 {headerGroup.headers.map((column, i) => (
                   <div
                     {...column.getHeaderProps()}
-                    key={`column-${i}`}
+                    key={
+                      // biome-ignore lint/suspicious/noArrayIndexKey:
+                      `column-${i}`
+                    }
                     className="modal-table-th"
                   >
                     {column.render('Header')}
@@ -615,6 +628,30 @@ const SearchResultTable: React.FunctionComponent<{
   );
 };
 
+const Select: React.FunctionComponent<
+  {
+    options: { value: string; text: string }[];
+    placeholder?: string;
+    className?: string;
+  } & React.RefAttributes<HTMLSelectElement> &
+    React.SelectHTMLAttributes<HTMLSelectElement>
+> = React.forwardRef(({ options, placeholder, className, ...params }, ref) => {
+  return (
+    <select
+      className={`border-0 rounded-md text-gray-600 py-1 pl-2 pr-8 text-sm bg-white ${className}`}
+      ref={ref}
+      {...params}
+    >
+      {placeholder && <option value="">{placeholder}</option>}
+      {options.map(({ value, text }, i) => (
+        <option value={value} key={value}>
+          {text}
+        </option>
+      ))}
+    </select>
+  );
+});
+
 const Modal: React.FunctionComponent<{
   showFlag: boolean | undefined;
   defaultParams: SearchParams | undefined;
@@ -628,7 +665,7 @@ const Modal: React.FunctionComponent<{
     setOptions(buildSearchArgs(d));
   };
   const [disabled, setDisabled] = React.useState<boolean>(false);
-  const onReadyStateChange = (state: ReadyState) => {
+  const onReadyStateChange = React.useCallback((state: ReadyState) => {
     switch (state) {
       case 0:
         setDisabled(false);
@@ -636,35 +673,9 @@ const Modal: React.FunctionComponent<{
       case 1:
         setDisabled(true);
     }
-  };
+  }, []);
 
   const { register, handleSubmit, reset } = useForm<SearchParams>();
-
-  const Select: React.FunctionComponent<
-    {
-      options: { value: string; text: string }[];
-      placeholder?: string;
-      className?: string;
-    } & React.RefAttributes<HTMLSelectElement> &
-      React.SelectHTMLAttributes<HTMLSelectElement>
-  > = React.forwardRef(
-    ({ options, placeholder, className, ...params }, ref) => {
-      return (
-        <select
-          className={`border-0 rounded-md text-gray-600 pl-2 pr-8 text-sm ${className}`}
-          ref={ref}
-          {...params}
-        >
-          {placeholder && <option value="">{placeholder}</option>}
-          {options.map(({ value, text }, i) => (
-            <option value={value} key={i}>
-              {text}
-            </option>
-          ))}
-        </select>
-      );
-    }
-  );
 
   const [searchResultTableHeight, setSearchResultTableHeight] =
     React.useState<number>(48);
@@ -686,7 +697,7 @@ const Modal: React.FunctionComponent<{
       }
     }
     setOptions(undefined);
-  }, [showFlag]);
+  }, [showFlag, defaultParams, reset]);
 
   return (
     <div
@@ -694,14 +705,9 @@ const Modal: React.FunctionComponent<{
         !showFlag && 'hidden'
       }`}
     >
-      <style jsx>{`
-        button.bg-gray-300:disabled {
-          @apply bg-gray-400;
-        }
-      `}</style>
       <div className="bg-gray-500 bg-opacity-75 rounded-md w-full md:w-5/6 lg:w-3/4 md:h-1/2 h-full m-4 md:m-auto p-4 relative">
         <div className="absolute right-0 -top-5">
-          <button onClick={onCloseButtonClick}>
+          <button type="button" onClick={onCloseButtonClick}>
             <CloseIcon sx={{ width: '1.5rem', height: '1.5rem' }} />
           </button>
         </div>
@@ -713,12 +719,12 @@ const Modal: React.FunctionComponent<{
             <div className="flex flex-col">
               <div>
                 <input
-                  className="border-0 rounded-md px-2 leading-8 form-input-text w-full"
+                  className="border-0 rounded-md px-2 py-1 leading-8 form-input-text w-full bg-white"
                   type="text"
                   placeholder="法人名で検索(例: オープンコレクター)"
                   disabled={disabled}
                   {...register('corporateName')}
-                ></input>
+                />
               </div>
               <div className="flex flex-row flex-wrap -mr-1">
                 <div className="mt-1 mr-1">
@@ -749,7 +755,7 @@ const Modal: React.FunctionComponent<{
                 <div className="mt-1 mr-1 flex-auto basis-full">
                   <button
                     type="submit"
-                    className="rounded-md bg-gray-300 p-2 w-full whitespace-nowrap text-sm"
+                    className="rounded-md bg-gray-300 p-2 w-full whitespace-nowrap text-sm disabled:bg-gray-400"
                     disabled={disabled}
                   >
                     検索
@@ -788,7 +794,7 @@ const TextField: React.FunctionComponent<
         <label className="form-label" htmlFor={id}>
           <span className="form-label-main">{label}</span>
         </label>
-        <div className="form-field-main">
+        <div className="form-field-main flex flex-row items-center">
           <input
             key={name}
             id={id}
@@ -802,7 +808,7 @@ const TextField: React.FunctionComponent<
         </div>
       </>
     );
-  }
+  },
 );
 
 const SelectField: React.FunctionComponent<
@@ -831,8 +837,8 @@ const SelectField: React.FunctionComponent<
             {...params}
           >
             {placeholder && <option value="">{placeholder}</option>}
-            {options.map(({ value, text }, i) => (
-              <option value={value} key={i}>
+            {options.map(({ value, text }) => (
+              <option value={value} key={value}>
                 {text}
               </option>
             ))}
@@ -840,7 +846,7 @@ const SelectField: React.FunctionComponent<
         </div>
       </>
     );
-  }
+  },
 );
 
 type HoujinbangouForm = {
@@ -859,7 +865,7 @@ const Houjinbangou: React.FunctionComponent = () => {
     SearchParams | undefined
   >(undefined);
   const [showModalFlag, setShowModalFlag] = React.useState<boolean | undefined>(
-    undefined
+    undefined,
   );
   const onOpenModalButtonClick: React.MouseEventHandler = (e) => {
     e.preventDefault();
@@ -882,89 +888,16 @@ const Houjinbangou: React.FunctionComponent = () => {
       'address1',
       rec.address.town
         ? rec.address.town + (rec.address.block_lot_num || '')
-        : ''
+        : '',
     );
     setValue(
       'address2',
-      (rec.address.building ? rec.address.building + ' ' : '') +
-        (rec.address.floor_room || '')
+      `${rec.address.building ? rec.address.building + ' ' : ''}${rec.address.floor_room ?? ''}`,
     );
   };
 
   return (
     <>
-      <style jsx global>{`
-        .form-field-main {
-          @apply md:mb-0 mb-3 flex flex-row items-center;
-        }
-
-        .form-field-elem {
-          @apply border-gray-300 rounded-md;
-        }
-
-        .form-label {
-          @apply md:mt-2;
-        }
-
-        .form-label.nogap {
-          @apply md:mt-0;
-        }
-
-        .form-label-main {
-          display: block;
-        }
-
-        .form-label-main.required::after {
-          @apply text-gray-500 text-xs;
-          content: '*';
-          vertical-align: super;
-        }
-
-        .form-label-aux {
-          display: block;
-          @apply text-sm;
-        }
-
-        @media (min-width: 768px) {
-          .md-form-field-horiz {
-            grid-template-columns: minmax(8rem, 10rem) minmax(20rem, 1fr);
-          }
-        }
-
-        .modal-table-tr {
-          height: 32px;
-        }
-
-        .modal-table-thead {
-          height: 32px;
-          @apply bg-white border-b border-gray-300;
-        }
-
-        .modal-table-footer {
-          height: 32px;
-        }
-
-        .modal-table-td,
-        .modal-table-th {
-          @apply overflow-hidden whitespace-nowrap p-1;
-        }
-
-        .modal-table-tbody {
-          @apply bg-white;
-        }
-
-        .modal-table-tbody .modal-table-tr:hover {
-          @apply bg-gray-200 cursor-pointer;
-        }
-
-        .modal-table-tbody .modal-table-tr:active {
-          @apply bg-gray-400;
-        }
-
-        .modal-table-tbody .modal-table-row-odd {
-          @apply bg-gray-100;
-        }
-      `}</style>
       <div className="flex flex-col">
         <h1 className="mb-5 text-3xl font-bold text-gray-500">
           法人番号API デモ: 法人住所入力フォーム
@@ -980,7 +913,8 @@ const Houjinbangou: React.FunctionComponent = () => {
                 elemClassName="w-full sm:w-1/2"
               >
                 <button
-                  className="ml-2 rounded-md p-2 h-8 w-26 bg-gray-300 text-sm whitespace-nowrap flex flex-cols justify-center items-center"
+                  type="button"
+                  className="ml-2 rounded-md p-2 w-26 bg-gray-300 text-md whitespace-nowrap flex flex-cols justify-center items-center box-content"
                   onClick={onOpenModalButtonClick}
                 >
                   <span>簡単入力</span>
